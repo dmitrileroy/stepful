@@ -10,8 +10,8 @@ const authController = {
         .split(":");
       let table = req.body.role === "student" ? "students" : "coaches";
       const loginQuery = `SELECT id, name FROM ${table} 
-      WHERE email = $1 AND password = $2 AND role = $3;`;
-      const params: Array<string> = [username, password, req.body.role];
+      WHERE email = $1 AND password = $2;`;
+      const params: Array<string> = [username, password];
       const queryResp: any = await db.query(loginQuery, params);
       if (queryResp?.rows[0]?.id) {
         return res.status(200).json({
@@ -33,11 +33,10 @@ const authController = {
   signup: async (req: Request, res: Response, next: NextFunction) => {
     try {
       let table = req.body.role === "student" ? "students" : "coaches";
-      const signupQuery = `INSERT INTO ${table} (role, email, password, name, created_at) 
-    VALUES ($1, $2, $3, $4, NOW())
+      const signupQuery = `INSERT INTO ${table} (email, password, name, created_at) 
+    VALUES ($1, $2, $3, NOW())
     RETURNING id;`;
       const params: Array<string> = [
-        req.body.role,
         req.body.email,
         req.body.password,
         req.body.name,
