@@ -42,6 +42,7 @@ const authController = {
         req.body.password,
         req.body.name,
       ];
+
       const queryResp: any = await db.query(signupQuery, params);
       return res.status(200).json({ status: "ok", id: queryResp.rows[0].id });
     } catch (err) {
