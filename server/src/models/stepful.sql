@@ -33,6 +33,6 @@ CREATE TABLE feedback (
   "id" serial PRIMARY KEY,
   "schedule_id" INT NOT NULL, 
   "rating" INT NOT NULL,
-  "notes": VARCHAR(200),
+  "notes" VARCHAR(200),
   CONSTRAINT fk_schedule_id FOREIGN KEY(schedule_id) REFERENCES schedule(id)
 );
