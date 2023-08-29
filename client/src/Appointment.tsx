@@ -6,7 +6,7 @@ import AddAppointmentDialog from "./AddAppointmentDialog";
 import { set } from "date-fns";
 
 type CellProps = {
-  props: { appointmentStatus: string; isPrevious: boolean };
+  props: { appointmentStatus: string; isPrevious: boolean, isNewlyBooked: boolean, role: string};
 };
 
 const AppointmentMain: any = styled("div", {
@@ -18,7 +18,7 @@ const AppointmentMain: any = styled("div", {
     ? "grey"
     : props.appointmentStatus === "available"
     ? "rgb(84, 199, 84)"
-    : props.appointmentStatus === "booked"
+    : props.appointmentStatus === "booked" && (props.isNewlyBooked || props.role === "coach") 
     ? "rgb(255, 130, 41)"
     : "transparent",
 }));
@@ -55,15 +55,16 @@ const Appointment = ({
     : false;
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const isNewlyBooked = appointment?.isNewlyBooked ?? false;
   const appointmentStatus = appointment?.bookingstatus
-    ? appointment?.bookingstatus
+    ? appointment.bookingstatus
     : "empty";
   const handleClick = (e: React.MouseEvent<HTMLElement>) => {
     if (
       (appointment && role === "coach") ||
       (!appointment && role === "student") ||
-      (appointment?.bookingstatus === "booked" && role === "student" ) ||
-      isSelf || 
+      (appointment?.bookingstatus === "booked" && role === "student") ||
+      isSelf ||
       isPrevious
     ) {
       return;
@@ -77,7 +78,7 @@ const Appointment = ({
 
   return (
     <AppointmentMain
-      props={{ appointmentStatus, isPrevious }}
+      props={{ appointmentStatus, isPrevious, isNewlyBooked, role }}
       onClick={handleClick}
     >
       <AddAppointmentDialog
@@ -90,12 +91,17 @@ const Appointment = ({
         date={date}
         role={role}
       />
-      {appointment?.bookingstatus === "available" && <Status>available</Status>}
+      {appointment?.bookingstatus === "available" && !isPrevious && (
+        <Status>available</Status>
+      )}
       {appointment?.bookingstatus === "booked" && (
         <div>
           <Status>booked</Status>
-          {!isSelf &&
-            <Status>{appointment.studentname}</Status>}
+          {!isSelf && <Status>{appointment.studentname}</Status>}
+          {role === "student" && <Status>{appointment.coachname}</Status>}
+          {appointment?.isNewlyBooked && (
+            <Status>Sorry, just booked by {appointment.studentname}</Status>
+          )}
         </div>
       )}
     </AppointmentMain>

@@ -40,7 +40,7 @@ const ErrorMessage = styled("p")({
   fontSize: "18px",
 });
 
-const Coach = (): JSX.Element => {
+const Student = (): JSX.Element => {
   const location = useLocation();
   const { role, id, name } = location.state ?? { role: "", id: "", name: "" };
   const options = [{ name: "self", id }];
@@ -59,12 +59,10 @@ const Coach = (): JSX.Element => {
     }
   });
 
-  console.log('these', filteredAppointments)
-
   return (
     <Main>
       <Navbar name={name} />
-      {!isLoading && !error && (
+      { !error && (
         <AutocompleteWrapper>
           <Autocomplete
             disableClearable
@@ -90,11 +88,11 @@ const Coach = (): JSX.Element => {
       )}
 
       <Section>
-        {isLoading && <CircularProgress />}
+        {/* {isLoading && <CircularProgress />} */}
         {error && (
           <ErrorMessage>Error occured. Please try again later</ErrorMessage>
         )}
-        {!isLoading && !error && (
+        {!error && (
           <WeeklyCalendar
             appointments={filteredAppointments}
             allAppointments={appointments}
@@ -107,4 +105,4 @@ const Coach = (): JSX.Element => {
   );
 };
 
-export default Coach;
+export default Student;

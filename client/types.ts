@@ -40,6 +40,8 @@ export type Appointment = {
   bookingstatus: string;
   studentid?: string;
   studentname?: string;
+  isNewlyBooked?: boolean;
+  newlyBookedBy?: string | null;
 };
 
 export type WeeklyCalendarProps = {

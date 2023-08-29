@@ -14,13 +14,34 @@ export const useFetchAppointments = ({
 
   const getAppointments = async () => {
     try {
-      setIsLoading(true);
       let url =
         role === "coach"
           ? `/coach/${id}/getAllAppointments/`
           : `/student/getAllAppointments`;
       const apps = await axios.get(url);
-      setAppointments(apps.data.data ?? []);
+      const newAppts = apps.data.data ?? [];
+
+      const updatedAppts = newAppts.map((newAppt: Appointment) => {
+        const existingAppointment = appointments.find(
+          (existingAppt: Appointment) => existingAppt.id === newAppt.id
+        );
+        if (existingAppointment) {
+          if (
+            existingAppointment.bookingstatus === "available" &&
+            newAppt.bookingstatus === "booked"
+          ) {
+            newAppt.isNewlyBooked = true;
+          } else {
+            newAppt.isNewlyBooked = false;
+          }
+        } else {
+          newAppt.isNewlyBooked = false;
+        }
+        
+        return newAppt;
+      });
+      setAppointments(updatedAppts);
+
       if (role === "student") {
         let url = `/student/getAllCoaches`;
         const apps = await axios.get(url);
@@ -30,9 +51,12 @@ export const useFetchAppointments = ({
       console.log("error", err);
       setError(true);
     } finally {
-      setIsLoading(false);
-    }
-  };
+      if (role === "student") {
+        setTimeout(() => {
+          getAppointments();
+        }, 5000);
+      }
+    }}
 
   useEffect(() => {
     getAppointments();
